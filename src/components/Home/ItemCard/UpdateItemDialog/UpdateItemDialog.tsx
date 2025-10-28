@@ -1,16 +1,17 @@
+import { create, useModal } from "@ebay/nice-modal-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { Button } from "~/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
 import {
   Form,
   FormControl,
@@ -23,34 +24,44 @@ import { Input } from "~/components/ui/input";
 import { itemSchemaValidation } from "~/validation/item.validation";
 
 type CreateItemDialogProps = {
-  onAdd: (item: Item) => void;
+  onEdit: (item: Item) => void;
+  item: Item;
 };
 
-export function CreateItemDialog({ onAdd }: CreateItemDialogProps) {
+const UpdateItemDialog = create(({ onEdit, item }: CreateItemDialogProps) => {
+  const modal = useModal();
+
   const form = useForm<z.infer<typeof itemSchemaValidation>>({
     resolver: zodResolver(itemSchemaValidation),
+    defaultValues: {
+      ...item,
+    },
   });
 
   function onSubmit(values: z.infer<typeof itemSchemaValidation>) {
-    const id = Date.now().toString();
-    onAdd({ ...values, id });
-    toast.success("New item add successfully.");
-    form.reset({
-      title: "",
-      subTitle: "",
-    });
+    onEdit({ ...values, id: item.id });
+    toast.success("Item Edited successfully.");
+    onClose();
+  }
+
+  function onClear() {
+    form.reset({ ...item });
+    onClose();
+  }
+
+  function onClose() {
+    modal.remove();
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>Create</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader className="text-start">
-          <DialogTitle>Create Item</DialogTitle>
-          <DialogDescription>Create and add new item.</DialogDescription>
-        </DialogHeader>
+    <AlertDialog open={modal.visible}>
+      <AlertDialogContent className="sm:max-w-[425px]">
+        <AlertDialogHeader className="text-start">
+          <AlertDialogTitle>Update Item</AlertDialogTitle>
+          <AlertDialogDescription>
+            Update and edit " {item.title} ".
+          </AlertDialogDescription>
+        </AlertDialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -79,12 +90,20 @@ export function CreateItemDialog({ onAdd }: CreateItemDialogProps) {
                 </FormItem>
               )}
             />
-            <div className="flex justify-end">
-              <Button type="submit">Submit</Button>
+            <div className="flex gap-3 justify-end">
+              <AlertDialogCancel onClick={onClear}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                type="button"
+                onClick={form.handleSubmit(onSubmit)}
+              >
+                Submit
+              </AlertDialogAction>
             </div>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
-}
+});
+
+export default UpdateItemDialog;
