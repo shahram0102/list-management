@@ -20,22 +20,18 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { itemSchemaValidation } from "~/validation/item.validation";
 
 type CreateItemDialogProps = {
   onAdd: (item: Item) => void;
 };
 
-const formSchema = z.object({
-  title: z.string().min(2).max(50),
-  subTitle: z.string().min(10).max(200),
-});
-
 export function CreateItemDialog({ onAdd }: CreateItemDialogProps) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof itemSchemaValidation>>({
+    resolver: zodResolver(itemSchemaValidation),
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof itemSchemaValidation>) {
     const id = Date.now().toString();
     onAdd({ ...values, id });
     toast.success("New item add successfully.");
