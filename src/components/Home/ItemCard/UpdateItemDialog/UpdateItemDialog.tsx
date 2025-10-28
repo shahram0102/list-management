@@ -21,14 +21,14 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import useStore from "~/store/index.store";
 import { itemSchemaValidation } from "~/validation/item.validation";
 
 type CreateItemDialogProps = {
-  onEdit: (item: Item) => void;
   item: Item;
 };
 
-const UpdateItemDialog = create(({ onEdit, item }: CreateItemDialogProps) => {
+const UpdateItemDialog = create(({ item }: CreateItemDialogProps) => {
   const modal = useModal();
 
   const form = useForm<z.infer<typeof itemSchemaValidation>>({
@@ -39,7 +39,7 @@ const UpdateItemDialog = create(({ onEdit, item }: CreateItemDialogProps) => {
   });
 
   function onSubmit(values: z.infer<typeof itemSchemaValidation>) {
-    onEdit({ ...values, id: item.id });
+    useStore.getState().editItem({ ...values, id: item.id });
     toast.success("Item Edited successfully.");
     onClose();
   }

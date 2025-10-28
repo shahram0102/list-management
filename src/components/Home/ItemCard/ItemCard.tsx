@@ -2,6 +2,7 @@
 
 import { show } from "@ebay/nice-modal-react";
 import { Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -10,17 +11,25 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import useStore from "~/store/index.store";
 import UpdateItemDialog from "./UpdateItemDialog/UpdateItemDialog";
 
 type ItemCardProps = {
   item: Item;
-  onEdit: (item: Item) => void;
-  onDelete: (id: string) => void;
 };
 
-export default function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
+export default function ItemCard({ item }: ItemCardProps) {
   async function showEditDialog() {
-    await show(UpdateItemDialog, { onEdit, item });
+    await show(UpdateItemDialog, { item });
+  }
+
+  function onDelete(id: string) {
+    const isConfirmed = confirm("Are you sure you want to delete this Item?");
+    if (!isConfirmed) return;
+
+    useStore.getState().deleteItem(id);
+
+    toast.success("Item deleted successfully.");
   }
 
   return (
