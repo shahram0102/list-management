@@ -1,5 +1,5 @@
 type Item = {
   id: string;
   title: string;
-  description?: string;
+  subTitle: string;
 };
