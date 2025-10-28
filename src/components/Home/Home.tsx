@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
+import EmptyListNotice from "./EmptyListNotice/EmptyListNotice";
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([]);
@@ -11,6 +12,9 @@ export default function Home() {
         <p className="text-base md:text-lg text-muted-foreground">
           Manage your items easily — view, add, edit, or delete them.
         </p>
+      </div>
+      <div className="flex-1">
+        {!items.length ? <EmptyListNotice /> : <></>}
       </div>
       <div className="w-full flex items-center justify-end">
         <Button>Create</Button>
