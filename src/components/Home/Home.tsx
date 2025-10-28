@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { ScrollArea } from "../ui/scroll-area";
 import { CreateItemDialog } from "./CreateItemDialog/CreateItemDialog";
 import EmptyListNotice from "./EmptyListNotice/EmptyListNotice";
@@ -9,6 +10,19 @@ export default function Home() {
 
   function onAdd(item: Item) {
     setItems((prevItems) => [...prevItems, item]);
+  }
+
+  function onDelete(id: string) {
+    const isConfirmed = confirm("Are you sure you want to delete this Item?");
+    if (!isConfirmed) return;
+    setItems((prevItems) => prevItems.filter((i) => i.id !== id));
+    toast.success("Item deleted successfully.");
+  }
+
+  function onEdit(updatedItem: Item) {
+    setItems((prevItems) =>
+      prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
   }
 
   return (
@@ -28,8 +42,8 @@ export default function Home() {
               <ItemCard
                 key={item.id}
                 item={item}
-                onEdit={(item) => console.log("Edit:", item)}
-                onDelete={(id) => console.log("Delete:", id)}
+                onEdit={onEdit}
+                onDelete={onDelete}
               />
             ))
           )}

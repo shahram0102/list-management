@@ -1,5 +1,6 @@
 "use client";
 
+import { show } from "@ebay/nice-modal-react";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
@@ -9,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import UpdateItemDialog from "./UpdateItemDialog/UpdateItemDialog";
 
 type ItemCardProps = {
   item: Item;
@@ -17,6 +19,10 @@ type ItemCardProps = {
 };
 
 export default function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
+  async function showEditDialog() {
+    await show(UpdateItemDialog, { onEdit, item });
+  }
+
   return (
     <Card className="transition hover:shadow-md flex flex-col justify-between h-full max-h-64">
       <CardHeader>
@@ -28,9 +34,9 @@ export default function ItemCard({ item, onEdit, onDelete }: ItemCardProps) {
 
       <CardFooter className="justify-end gap-2">
         <Button
+          onClick={showEditDialog}
           variant="outline"
           size="sm"
-          onClick={() => onEdit(item)}
           className="flex items-center gap-1"
         >
           <Pencil className="h-4 w-4" /> Edit
